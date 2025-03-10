@@ -116,11 +116,11 @@ FaaSシードは以下のアーキテクチャで構成されています。
 
 ### AWS アクセスキーの取得(ハンズオン)
 
-まずは、事前に配布されたユーザーネームとパスワードで、AWSマネジメントコンソールにサインインします。  
+まずは、事前に配布されたユーザーネームとパスワードで、AWSマネジメントコンソールにサインインします。
 以下のURLにアクセスしてください。
 
-サインインすると、パスワードの変更画面がでる場合がありますが、その際は変更してください。  
-その後は、以下の手順に従ってアクセスキーを払い出してください。  
+サインインすると、パスワードの変更画面がでる場合がありますが、その際は変更してください。
+その後は、以下の手順に従ってアクセスキーを払い出してください。
 <https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access-key-self-managed.html#Using_CreateAccessKey>
 
 ユースケースは今回はAWS CLIを利用するので、CLIを選び、チェックボックスにチェックを付けて進めてください。
@@ -167,7 +167,7 @@ aws_secret_access_key = {シークレットアクセスキー}
 ```ini
 [profile handson]
 region=ap-northeast-1
-role_arn=arn:aws:iam::394895440631:role/faas-seed-handson-yyyymmdd
+role_arn=arn:aws:iam::394895440631:role/faas-seed-handson2250228
 source_profile=default
 cli_pager=
 ```
@@ -335,7 +335,7 @@ terraform apply -var-file ./tfvars/dev.tfvars
 
 次に、Lambdaで利用するコンテナイメージをビルドします。ビルドしたイメージは先ほどTerraformでデプロイしたECRにpushするため、ECRのページを開き、プッシュコマンドを表示して実行しましょう。
 
-まず、配布したAWSアカウントにログインした状態で、[こちら](https://signin.aws.amazon.com/switchrole?roleName=faas-seed-handson-20241127&account=techbeyond-fv02)にアクセスし、ハンズオンで使うアカウントのロールにスイッチロールします。  
+まず、配布したAWSアカウントにログインした状態で、[こちら](https://signin.aws.amazon.com/switchrole?roleName=faas-seed-handson-20241127&account=techbeyond-fv02)にアクセスし、ハンズオンで使うアカウントのロールにスイッチロールします。
 その後、ECRのリポジトリのページを開きます。
 
 ![ECRに遷移](../../assets/ecr_search.png)
@@ -362,7 +362,7 @@ npm run deploy -- --stage dev --param "imageTag=:latest"
 ![deployed_api_index_return](../../assets/deployed_api_index_return.png)
 
 では、アプリ自体の確認ができたところで、実際にデプロイしたリソースと、ログを見に行きましょう。
-AWSマネジメントコンソールの画面で Lambdaに行き、自身が作成したリソースの末尾に`express`とついている物を開きます。(例: `faas-t2021026-dev-express`)  
+AWSマネジメントコンソールの画面で Lambdaに行き、自身が作成したリソースの末尾に`express`とついている物を開きます。(例: `faas-t2021026-dev-express`)
 このように自分のAPIに利用しているLambdaデプロイされていることが分かります。
 モニタリングのタブに行き、`CloudWatchログを表示`のボタンを押しましょう。
 ![lambda_monitoring_log](../../assets/lambda_monitoring_log.png)
@@ -465,7 +465,7 @@ export default function () {
 }
 ```
 
-※ コーディング中によくわからないエラーが表示されるときはVSCodeのコマンドパレットからTSサーバーやESlintサーバーを再起動すると直る場合があります。  
+※ コーディング中によくわからないエラーが表示されるときはVSCodeのコマンドパレットからTSサーバーやESlintサーバーを再起動すると直る場合があります。
 `Ctrl` + `Shift` + `P` → `TS` や `ESLint`と打ち込み、以下の画像の2つを選ぶ。
 ![restert_extension_server](../../assets/restert_extension_server.png)
 

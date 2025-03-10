@@ -53,7 +53,7 @@ jobs:
         with:
           name: coverage
           path: coverage/
-  
+
   build:
     uses: ./.github/workflows/build_and_push.yml
     needs: [lint, test]
@@ -61,16 +61,16 @@ jobs:
       id-token: write
       contents: read
     with:
-      repository: ${{ vars.ECR_EXPRESS_REPOSITORY }}
-      assume_role: ${{ vars.DEV_ASSUME_ROLE_ARN }}
-      aws_region: ${{ vars.DEV_AWS_REGION }}
+      repository: faas-t2022096-lambda-repository-dev
+      assume_role: arn:aws:iam::394895440631:role/faas-t2022096-github-oidc
+      aws_region: ap-northeast-1
 
   convert_head_ref_name:
     needs: build
     uses: ./.github/workflows/convert_to_artifact_name.yml
     with:
       org: ${{ github.ref_name }}
-  
+
   save_image_hash:
     runs-on: ubuntu-latest
     needs: [build, convert_head_ref_name]

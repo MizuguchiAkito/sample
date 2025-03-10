@@ -1,5 +1,6 @@
 variable "prefix_name" {
   type        = string
+  default = "faas-t2022096"
   description = "tag:Nameの前に付くprefix"
   validation {
     condition     = can(regex("faas\\-[a-z][0-9]+", var.prefix_name))

@@ -382,6 +382,49 @@
           }
         }
       }
+    },
+    "/uppercase": {
+      "post": {
+        "summary": "UpperCaseに変換します",
+        "operationId": "convertToUppercase",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "input": {
+                    "type": "string",
+                    "description": "UpperCaseに変換する対象の文字列",
+                    "example": "hello world"
+                  }
+                },
+                "required": ["input"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "UpperCase成功時",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "output": {
+                      "type": "string",
+                      "description": "UpperCase変換後文字列",
+                      "example": "HELLO WORLD"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

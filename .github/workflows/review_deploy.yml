@@ -19,6 +19,6 @@ jobs:
     with:
       env: dev
       artifact: ${{ needs.convert_head_ref_name.outputs.converted }}
-      assume_role: ${{ vars.DEV_ASSUME_ROLE_ARN }}
-      aws_region: ${{ vars.DEV_AWS_REGION }}
-      app_domain: ${{ vars.DEV_APP_DOMAIN }}
+      assume_role: arn:aws:iam::394895440631:role/faas-t2022096-github-oidc
+      aws_region: ap-northeast-1
+      app_domain: -api-t2022096.faas-handson.cnt-tdc.com

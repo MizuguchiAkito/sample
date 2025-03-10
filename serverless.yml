@@ -4,7 +4,7 @@
 ## 変数について
 ## https://www.serverless.com/framework/docs/providers/aws/guide/variables
 
-service: cnt-typescript-backend-aws-lambda
+service: faas-t2022096
 frameworkVersion: "3"
 useDotenv: true
 
@@ -14,8 +14,8 @@ custom:
   # https://dev-api.tb-cn-arch.cnt-tdc.com
   config: ${file(./config/${sls:stage}.yml), file(./config/default.yml)}
   customDomain:
-    domainName: ${sls:stage}-api.tb-cn-arch.cnt-tdc.com
-    certificateName: "*.tb-cn-arch.cnt-tdc.com"
+    domainName: ${sls:stage}-api-t2022096.faas-handson.cnt-tdc.com
+    certificateName: "*.faas-handson.cnt-tdc.com"
     endpointType: REGIONAL
     apiType: http
     autoDomain: true

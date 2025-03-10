@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:14
+    volumes:
+      - type: volume
+        source: postgres-data
+        target: /var/lib/postgresql/data
+    networks:
+      - faas-seed-max
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    hostname: postgres
+
+  pgadmin4:
+    image: dpage/pgadmin4:6
+    ports:
+      - 8000:80
+    volumes:
+      - type: volume
+        source: pgadmin4_volume
+        target: /var/lib/pgadmin
+    networks:
+      - faas-seed-max
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@example.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    hostname: pgadmin4
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
+  pgadmin4_volume:
+
+networks:
+  faas-seed-max:
+    external: true
