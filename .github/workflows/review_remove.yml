@@ -1,0 +1,24 @@
+name: review remove
+
+on:
+  workflow_dispatch:
+
+jobs:
+  convert_head_ref_name:
+    uses: ./.github/workflows/convert_to_artifact_name.yml
+    with:
+      org: ${{ github.ref_name }}
+
+  serverless_deploy:
+    needs: convert_head_ref_name
+    uses: ./.github/workflows/remove.yml
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    with:
+      env: dev
+      artifact: ${{ needs.convert_head_ref_name.outputs.converted }}
+      assume_role: ${{ vars.DEV_ASSUME_ROLE_ARN }}
+      aws_region: ${{ vars.DEV_AWS_REGION }}
+      app_domain: ${{ vars.DEV_APP_DOMAIN }}

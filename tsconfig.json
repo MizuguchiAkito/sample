@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    },
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "noUnusedParameters": false,
+    "types": [
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "./src/**/*.ts",
+    "vitest.config.ts"
+  ]
+}

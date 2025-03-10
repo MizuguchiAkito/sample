@@ -1,0 +1,4 @@
+env: dev
+isDefault: "true"
+# IAMロールの64文字制限があるため、短縮名を付けておくことを推奨します
+shortPrefix: cnt-tb-al

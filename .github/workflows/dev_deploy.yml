@@ -1,0 +1,47 @@
+name: dev deploy
+
+on:
+  workflow_run:
+    workflows: [check]
+    types: 
+      - completed
+    branches:
+      - main # 直pushに対応
+
+jobs:
+  convert_head_ref_name:
+    uses: ./.github/workflows/convert_to_artifact_name.yml
+    with:
+      org: ${{ github.ref_name }}
+
+  serverless_deploy:
+    needs: convert_head_ref_name
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    with:
+      env: dev
+      artifact: ${{ needs.convert_head_ref_name.outputs.converted }}
+      assume_role: ${{ vars.DEV_ASSUME_ROLE_ARN }}
+      aws_region: ${{ vars.DEV_AWS_REGION }}
+      app_domain: ${{ vars.DEV_APP_DOMAIN }}
+
+  setting_retention_days:
+    runs-on: ubuntu-latest
+    needs: serverless_deploy
+    permissions:
+      actions: write
+    steps:
+      # 閉じたプルリクの作業ブランチのイメージハッシュは共有する必要が無いので、自動で削除されるように期限設定を行う
+      - name: Load hash
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.convert_head_ref_name.outputs.converted }}
+      - name: Setting retention-days
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ needs.convert_head_ref_name.outputs.converted }}
+          path: image_hash.txt
+          retention-days: 1

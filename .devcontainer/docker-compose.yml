@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  workspace:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspace
+    command: sleep infinity
+    networks:
+      - faas-seed-max
+    volumes:
+      # local binding
+      - type: bind
+        source: ../
+        target: /workspace
+        consistency: cached
+        bind:
+          create_host_path: true
+      # npm cache
+      - type: volume
+        source: npm-cache
+        target: /home/node/.npm
+      - type: volume
+        source: code-dist
+        target: /workspace/dist
+      - type: volume
+        source: node_modules
+        target: /workspace/node_modules
+      - type: volume
+        source: bashhistory
+        target: /commandhistory
+    environment:
+      - AWS_SDK_LOAD_CONFIG=1
+
+volumes:
+  npm-cache:
+  code-dist:
+  node_modules:
+  bashhistory:
+
+networks:
+  faas-seed-max:
+    name: faas-seed-max

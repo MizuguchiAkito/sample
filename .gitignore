@@ -1,0 +1,36 @@
+node_modules
+dist
+coverage
+.env
+
+# Serverless directories
+.serverless
+
+# Terraform directories
+## Local .terraform directories
+**/.terraform/*
+
+## .tfstate files
+*.tfstate
+*.tfstate.*
+
+## Crash log files
+crash.log
+crash.*.log
+
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+## Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+## `terraform init` lock file
+# cacheを利用するためignoreしない
+# .terraform.lock.hcl
+
+
+## terraform variable file
+terraform.tfvars

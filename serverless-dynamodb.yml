@@ -1,0 +1,26 @@
+Resources:
+  # 参考: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+  DynamoDbTable:
+    Type: AWS::DynamoDB::Table
+    Condition: NotDefault
+    Properties:
+      # set Partition Key / Sort Key
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: name
+          AttributeType: S
+      # set the type of key
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH # partition key
+        - AttributeName: name
+          KeyType: RANGE # sort key
+      # set CapacityUnits
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      # set table name
+      TableName: ${self:service}-DynamoDB
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain

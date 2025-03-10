@@ -1,0 +1,48 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.eol": "\n",
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "markdownlint.config": {
+    "MD032": false,
+    "MD033": {
+      "allowed_elements": [
+        "details",
+        "summary"
+      ]
+    }
+  },
+  "[terraform]": {
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.tabSize": 2
+  },
+  "cSpell.words": [
+    "devcontainer"
+  ],
+  "path-intellisense.mappings": {
+    "@/": "${workspaceFolder}/src/"
+  },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "editor.insertSpaces": true,
+  "[typescript]": {
+    "editor.useTabStops": true
+  },
+  "markdown.extension.toc.updateOnSave": false,
+  "markdown.extension.toc.slugifyMode": "gitlab",
+  "markdown.extension.toc.orderedList": true,
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        ".ncurc.json",
+      ],
+      "url": "https://raw.githubusercontent.com/raineorshine/npm-check-updates/main/src/types/RunOptions.json"
+    }
+  ],
+  "eslint.useFlatConfig": true,
+}

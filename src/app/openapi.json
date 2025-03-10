@@ -1,0 +1,448 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "typescript-express-backend",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiUrl"
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "apiUrl": "http://localhost:3000/"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/ping": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "pong"
+                    }
+                  },
+                  "required": ["message"]
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "message": "pong"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/log": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "localInvoke"
+                        }
+                      },
+                      "required": ["message"]
+                    },
+                    {
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "example": "localInvoke"
+                        }
+                      },
+                      "required": ["url"]
+                    }
+                  ],
+                  "type": "object"
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "message": "localInvoke"
+                    }
+                  },
+                  "example-2": {
+                    "value": {
+                      "url": "https://console.aws.amazon.com/cloudwatch/home?region=ap-northeast-1#logsV2:log-groups/log-group/%2Faws%2Flambda%2Fcnt-typescript-backend-aws-lambda-dev-express/log-events/2022%2F10%2F17%2F%5B%24LATEST%5D746d635131c24842ad0725cfbb665108?filterPattern=$252272e4a1c5-bc1d-4ef9-8edf-f3c77d481621$2522"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/hello": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Hello World!"
+                    }
+                  },
+                  "required": ["message"]
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "message": "Hello World!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/calc/push": {
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "numbers": {
+                    "type": "array",
+                    "example": [1, 2, 3],
+                    "items": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                },
+                "required": ["numbers"]
+              },
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "numbers": [1, 2, 3, 4, 5]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "numbers": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "example": [1, 2, 3]
+                    }
+                  }
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "numbers": [1, 2, 3, 4, 5]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/calc/total": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 6
+                    }
+                  },
+                  "required": ["total"]
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "total": 6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/calc/multiplication": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "number",
+                      "example": 6
+                    }
+                  },
+                  "required": ["total"]
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "total": 6
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/secret/{secretName}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "secretName",
+            "in": "path",
+            "description": "取得するsecretのkey",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["value"]
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "value": "hoge"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/validCheck": {
+      "post": {
+        "summary": "",
+        "operationId": "post-validCheck",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "number"
+                  },
+                  "integer": {
+                    "type": "integer"
+                  },
+                  "string": {
+                    "type": "string"
+                  },
+                  "boolean": {
+                    "type": "boolean"
+                  },
+                  "optString": {
+                    "type": "string"
+                  },
+                  "arrayOfNumber": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "required": [
+                  "number",
+                  "integer",
+                  "string",
+                  "boolean",
+                  "arrayOfNumber"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "apiUrl": {
+        "title": "apiUrl",
+        "type": "object",
+        "properties": {
+          "apiUrl": {
+            "type": "string"
+          }
+        },
+        "required": ["apiUrl"]
+      }
+    },
+    "responses": {
+      "InternalError": {
+        "description": "unknown internal error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": ["message"]
+            },
+            "examples": {
+              "example-1": {
+                "value": {
+                  "message": "Something broke!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Example response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "number"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": ["status"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+name: deploy
+
+on:   
+  workflow_call:
+    inputs:
+      env:
+        description: 'A deployment target environment name.'
+        required: true
+        type: string
+      artifact:
+        description: 'An artifact name.'
+        required: true
+        type: string
+      assume_role:
+        description: 'An assume_role arn to deploy resources on aws.'
+        required: true
+        type: string
+      aws_region:
+        description: 'An aws region name to deploy resouces.'
+        required: true
+        type: string
+      app_domain:
+        description: 'An APP domain name.'
+        required: true
+        type: string
+
+jobs:
+  load_image_hash:
+    uses: ./.github/workflows/load_image_hash.yml
+    permissions:
+      actions: read
+    with:
+      artifact: ${{ inputs.artifact }}
+
+  serverless_deploy:
+    needs: load_image_hash
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ inputs.aws_region }}
+          role-to-assume: ${{ inputs.assume_role }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci --cache .npm --prefer-offline
+
+      - name: Deploy to dev environment
+        run: npm run deploy -- --stage ${{ inputs.env }} --param "imageTag=@${{ needs.load_image_hash.outputs.imageHash }}"
+        env:
+          APPS_DOMAIN: ${{ inputs.app_domain }}

@@ -1,0 +1,127 @@
+stages:
+  - init
+  - test
+  - build_and_push
+  - review
+  - serverless_deploy
+
+image: $CI_REGISTRY_IMAGE/ci:latest
+
+variables:
+  APPS_DOMAIN: -api.tb-cn-arch.cnt-tdc.com
+  AWS_ACCOUNT: 135214288490
+  IMAGE_PATH: cnt-typescript-backend-aws-lambda-lambda-repository-dev
+
+include:
+  - template: Jobs/SAST.latest.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.latest.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.latest.gitlab-ci.yml
+  - component: $CI_SERVER_FQDN/$CI_PROJECT_PATH/container-build-and-push@$CI_COMMIT_SHA
+    inputs:
+      as: build_api
+      stage: build_and_push
+      registry-url: $AWS_ACCOUNT.dkr.ecr.ap-northeast-1.amazonaws.com
+      registry-type: "ecr"
+      image-path: $IMAGE_PATH
+      digest_env: api_digest
+  - component: $CI_SERVER_FQDN/$CI_PROJECT_PATH/container-build-and-push@$CI_COMMIT_SHA
+    inputs:
+      as: build_builder
+      stage: init
+      registry-url: ${CI_REGISTRY_IMAGE}
+      registry-type: "gitlab"
+      file: ./.devcontainer/Dockerfile
+      image-path: ci
+      digest_env: builder_digest
+
+container_scanning:
+  variables:
+    CS_IMAGE: $CI_REGISTRY_IMAGE/ci:latest
+
+# Cache modules using lock file
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - .npm/
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+lint:
+  stage: test
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run lint
+
+test:
+  stage: test
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run test
+  artifacts:
+    paths:
+      - coverage/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+
+dev_deploy:
+  stage: serverless_deploy
+  rules:
+    # defaultブランチにコミットされた場合は実行
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run deploy -- --stage dev --param "imageTag=@${api_digest}"
+  environment:
+    name: dev
+    url: https://dev$APPS_DOMAIN
+    deployment_tier: development
+
+review:
+  stage: review
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run deploy -- --stage ${CI_COMMIT_REF_SLUG} --param "imageTag=@${api_digest}"
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    url: https://$CI_COMMIT_REF_SLUG$APPS_DOMAIN
+    on_stop: stop_review
+    deployment_tier: development
+  rules:
+    # protected branchの場合は実行不許可
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+      when: never
+    # PRの場合は手動実行を許可
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
+
+stop_review:
+  stage: review
+  needs:
+    - review
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run remove -- --stage ${CI_COMMIT_REF_SLUG} --param "imageTag=@${api_digest}
+  rules:
+    # protected branchの場合は実行不許可
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+      when: never
+    # PRの場合は手動実行を許可
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    action: stop

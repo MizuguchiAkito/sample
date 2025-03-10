@@ -1,0 +1,27 @@
+name: Convert to artifact name format
+
+on:
+  workflow_call:
+    inputs:
+      org:
+        description: 'A before convert name.'
+        required: true
+        type: string
+    outputs:
+      converted:
+        description: "An after converted name."
+        value: ${{ jobs.conv_ref_name.outputs.name }}
+
+jobs:
+  conv_ref_name:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.conv.outputs.name }}
+    steps:
+      - name: Convert ref name
+        id: conv
+        env:
+          ORIGIN: ${{ inputs.org }}
+        run: |
+          name=$(echo $ORIGIN | sed 's!/!-!g')
+          echo "name=$name" >> "$GITHUB_OUTPUT"

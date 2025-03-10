@@ -1,0 +1,20 @@
+concurrent = ${runners_concurrent}
+check_interval = ${runners_check_interval}
+log_format = "json"
+
+[[runners]]
+  name = "${runners_name}"
+  executor = "docker"
+  cache_dir = "/cache"
+  [runners.docker]
+    tls_verify = false
+    image = "docker:24.0.5"
+    privileged = true
+    disable_cache = false
+    volumes = ["/certs/client", "/cache"]
+    shm_size = ${runners_shm_size}
+    [[runners.docker.services]]
+      name = "docker:24.0.5-dind"
+      alias = "docker"
+      command = []
+      entrypoint = ["dockerd-entrypoint.sh"]

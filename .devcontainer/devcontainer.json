@@ -1,0 +1,62 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/typescript-node
+{
+  "name": "FaaS Seed TypeScript V1(handson)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "christian-kohler.path-intellisense",
+        "tombonnike.vscode-status-bar-format-toggle",
+        "redhat.vscode-yaml",
+        "DavidAnson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "EditorConfig.EditorConfig",
+        "mutantdino.resourcemonitor",
+        "shd101wyy.markdown-preview-enhanced",
+        "medo64.render-crlf",
+        "42Crunch.vscode-openapi",
+        "vitest.explorer",
+        "HashiCorp.terraform",
+        "christian-kohler.npm-intellisense"
+      ]
+    }
+  },
+  "forwardPorts": [
+    8000,
+    5432
+  ],
+  "portsAttributes": {
+    "8000": {
+      "label": "PGAdmin",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "postgres",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": [
+    "./.devcontainer/postCreateCommand.sh"
+  ],
+  // devcontainer内でgitが使えなくなる問題への対策
+  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+  "remoteUser": "node",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "os-provided"
+    },
+    "ghcr.io/devcontainers/features/git-lfs:1": {
+      "autoPull": true,
+      "version": "latest"
+    }
+  }
+}

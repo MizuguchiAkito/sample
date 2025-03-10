@@ -1,0 +1,117 @@
+# memo
+## ymlファイルの分割について
+## https://dev.classmethod.jp/articles/serverless-yml-read-external-file/
+## 変数について
+## https://www.serverless.com/framework/docs/providers/aws/guide/variables
+
+service: cnt-typescript-backend-aws-lambda
+frameworkVersion: "3"
+useDotenv: true
+
+custom:
+  # https://github.com/amplify-education/serverless-domain-manager
+  # httpではつながらないため注意
+  # https://dev-api.tb-cn-arch.cnt-tdc.com
+  config: ${file(./config/${sls:stage}.yml), file(./config/default.yml)}
+  customDomain:
+    domainName: ${sls:stage}-api.tb-cn-arch.cnt-tdc.com
+    certificateName: "*.tb-cn-arch.cnt-tdc.com"
+    endpointType: REGIONAL
+    apiType: http
+    autoDomain: true
+  ssmPrefix: /${self:service}/${self:custom.config.env}/backend
+
+provider:
+  name: aws
+  # お好みで
+  region: ap-northeast-1
+  memorySize: 512
+  timeout: 25
+  deploymentBucket:
+    blockPublicAccess: true
+    name: ${self:service}-deployment-bucket-${self:custom.config.env}
+  stackTags:
+    group: cnt
+    Name: ${self:service}-${sls:stage}-sls
+  tags:
+    group: cnt
+    service: ${self:service}
+    stage: ${sls:stage}
+
+  ecr:
+    images:
+      image:
+        uri: ${ssm:${self:custom.ssmPrefix}/ecr/lambda}${param:imageTag}
+  iam:
+    role:
+      name: ${self:custom.config.shortPrefix}-${sls:stage}-lambda
+      statements:
+        - Effect: Allow
+          Action:
+            - secretsmanager:GetSecretValue
+          Resource:
+            - "*"
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/*
+
+  httpApi:
+    # custom domainを使用するため
+    disableDefaultEndpoint: true
+    name: ${self:custom.config.shortPrefix}-${sls:stage}-api
+
+functions:
+  # API Gatewayを利用し、APIサーバーとして使うfunction
+  express:
+    # バックエンドサーバーなど応答性を重視する場合は1以上を推奨
+    # provisionedConcurrency: 1
+    image: image
+    name: ${self:custom.config.shortPrefix}-${sls:stage}-express
+    environment:
+      SECRET_NAME: ${ssm:${self:custom.ssmPrefix}/secret_manager_name}
+    events:
+      # 参考: https://www.serverless.com/framework/docs/providers/aws/events/http-api
+      - httpApi:
+          path: /{any+}
+          method: ANY
+  # EventBridge を利用し、バッチ処理などに使うfunction
+  example:
+    # デフォルトのCMDを上書きすることにより任意の呼び出し元で関数を作ることが出来ます
+    # 参考: https://www.serverless.com/framework/docs/providers/aws/guide/functions#referencing-container-image-as-a-target
+    image:
+      name: image
+      command:
+        # "./src"の代わりにビルド後の"./dist"を利用してください
+        - "./dist/functions/example/index.handler"
+    name: ${self:custom.config.shortPrefix}-${sls:stage}-example
+    environment:
+      SECRET_NAME: ${ssm:${self:custom.ssmPrefix}/secret_manager_name}
+    events:
+      # 参考: https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml#cloudwatch
+      - eventBridge:
+          # cron式はUTC時間のため注意すること
+          schedule: cron(0 10 1 * ? *) # 毎月1日 午前1時(JST 午前1時)
+
+resources:
+  # Defaultであるかどうかを判別しています
+  # ここでは、DynamoDBの生成可否を判断します
+  # 今回は、AWSアカウント1つにつき1つのDynamoDBを共用します
+  # これがある理由:
+  #   同一アカウントの中で同一名でCloudformationResourceを立てることが出来ないためです
+  - Conditions:
+      NotDefault: !Not [!Equals ["${self:custom.config.isDefault}", "true"]]
+  # DynamoDBは別ファイルへ分離
+  - ${file(./serverless-dynamodb.yml)}
+
+plugins:
+  - serverless-plugin-resource-tagging
+  - serverless-domain-manager
+# Serverless Frameworkによるoffline実行は未対応
+# $ npm install --save-dev serverless-offline
+# GitHub
+# - https://github.com/dherault/serverless-offline/issues/1324
+# - https://github.com/dherault/serverless-offline/blob/master/src/config/supportedRuntimes.js
+# plugins:
+#   - serverless-offline
